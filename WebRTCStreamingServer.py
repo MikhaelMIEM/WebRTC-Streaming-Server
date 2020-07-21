@@ -9,18 +9,27 @@ from aiohttp import web
 from aiortc import RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaPlayer
 
-logger = logging.getLogger(__name__)
 pcs = set()
-streams = {
-    "cam52": "rtsp://admin:Supervisor@172.18.200.52",
-    "cam53": "rtsp://admin:Supervisor@172.18.200.53",
-    "cam17": "rtsp://admin:Supervisor@172.18.212.17"
-}
+
+
+async def get_streams():
+    """
+    TODO: Тут надо делать запрос в бд и
+    возвращать ответ в формате как ниже.
+    """
+    streams_for_test = {
+        "cam52": "rtsp://admin:Supervisor@172.18.200.52",
+        "cam53": "rtsp://admin:Supervisor@172.18.200.53",
+        "cam17": "rtsp://admin:Supervisor@172.18.212.17"
+    }
+    return streams_for_test
 
 
 async def js_cors_preflight(request):
-    stream = request.match_info['stream']
-    if stream not in streams:
+    request_url = request.match_info['stream']
+    streams = await get_streams()
+
+    if request_url not in streams:
         raise web.HTTPNotFound()
     headers = {
         'Access-Control-Allow-Origin': '*',
@@ -30,8 +39,10 @@ async def js_cors_preflight(request):
 
 
 async def offer(request):
-    stream = request.match_info['stream']
-    if stream not in streams:
+    request_url = request.match_info['stream']
+    streams = await get_streams()
+
+    if request_url not in streams:
         raise web.HTTPNotFound()
 
     params = await request.json()
@@ -47,7 +58,7 @@ async def offer(request):
             await pc.close()
             pcs.discard(pc)
 
-    play_from = streams[stream]
+    play_from = streams[request_url]
     player = MediaPlayer(play_from)
 
     await pc.setRemoteDescription(offer)
