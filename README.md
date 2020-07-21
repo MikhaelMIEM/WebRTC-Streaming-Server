@@ -1,13 +1,13 @@
-### WebRTC streaming server
+# WebRTC streaming server
 WebRTC стриминговый сервер на языке **python**
 
-### Зависимости
+# Зависимости
 
 ```sh
 $ python3.8 -m pip install aiohttp aiortc
 ```
 
-### Запуск
+# Запуск
 ```sh
 $ python3.8 WebRTCStreamingServer.py
 ```
@@ -18,7 +18,7 @@ http://127.0.0.1:8181/media/cam53
 http://127.0.0.1:8181/media/cam17
 ```
 **Все медиа источники - RTSP потоки с камер в МИЭМе, не забудьте подключиться к сети вышки!**
-### Клиент
+# Клиент
 В папке **./'client example'** находится пример получения потока с сервера. Это html страничка и js файл, их можно раздать с помощью любого web сервера, например:
 ```sh
 $ cd ./'client example'
