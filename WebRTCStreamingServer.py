@@ -25,6 +25,9 @@ async def get_streams():
         cam['id']: cam['rtsp']
         for cam in cams
     }
+    streams['a'] = './a.mp4'
+    streams['b'] = './b.webm'
+    streams['c'] = './c.mp4'
 
     return streams
 
