@@ -4,7 +4,7 @@ import json
 import logging
 import ssl
 
-from aiohttp import web
+from aiohttp import web, ClientSession
 
 from aiortc import RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaPlayer
@@ -13,16 +13,20 @@ pcs = set()
 
 
 async def get_streams():
-    """
-    TODO: Тут надо делать запрос в бд и
-    возвращать ответ в формате как ниже.
-    """
-    streams_for_test = {
-        "cam52": "rtsp://admin:Supervisor@172.18.200.52",
-        "cam53": "rtsp://admin:Supervisor@172.18.200.53",
-        "cam17": "rtsp://admin:Supervisor@172.18.212.17"
+    headers = {"key": "79be20cd54214a30bf2ef8347915c084"}
+
+    async with ClientSession() as session:
+        async with session.get('https://nvr.miem.hse.ru/api/sources/',
+                               headers=headers) as resp:
+            text = await resp.text()
+            cams = json.loads(text)
+
+    streams = {
+        cam['id']: cam['rtsp']
+        for cam in cams
     }
-    return streams_for_test
+
+    return streams
 
 
 async def js_cors_preflight(request):
