@@ -22,7 +22,7 @@ async def get_streams():
             cams = json.loads(text)
 
     streams = {
-        cam['id']: cam['rtsp']
+        str(cam['id']): cam['rtsp']
         for cam in cams
     }
     streams['a'] = './a.mp4'
