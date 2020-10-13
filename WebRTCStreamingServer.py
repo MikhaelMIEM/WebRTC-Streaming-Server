@@ -66,7 +66,7 @@ async def offer(request):
             pcs.discard(pc)
 
     play_from = streams[request_url]
-    player = MediaPlayer(play_from)
+    player = MediaPlayer(play_from, options={'video_size': '640x480'})
 
     await pc.setRemoteDescription(offer)
     for t in pc.getTransceivers():
