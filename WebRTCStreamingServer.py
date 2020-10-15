@@ -9,9 +9,6 @@ from aiohttp import web, ClientSession
 from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
 from aiortc.contrib.media import MediaPlayer
 
-import cv2
-from av import VideoFrame
-
 pcs = set()
 
 
