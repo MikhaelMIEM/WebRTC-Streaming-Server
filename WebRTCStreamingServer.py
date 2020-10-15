@@ -6,10 +6,26 @@ import ssl
 
 from aiohttp import web, ClientSession
 
-from aiortc import RTCPeerConnection, RTCSessionDescription
+from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
 from aiortc.contrib.media import MediaPlayer
 
+import cv2
+from av import VideoFrame
+
 pcs = set()
+
+
+class VideoTransformTrack(MediaStreamTrack):
+    kind = "video"
+
+    def __init__(self, track):
+        super().__init__()
+        self.track = track
+
+    async def recv(self):
+        frame = await self.track.recv()
+        frame = frame.reformat(width=320, height=240)
+        return frame
 
 
 async def get_streams():
@@ -66,14 +82,15 @@ async def offer(request):
             pcs.discard(pc)
 
     play_from = streams[request_url]
-    player = MediaPlayer(play_from, options={'video_size': '320x240'})
+    player = MediaPlayer(play_from)
 
     await pc.setRemoteDescription(offer)
     for t in pc.getTransceivers():
         if t.kind == "audio" and player.audio:
             pc.addTrack(player.audio)
         elif t.kind == "video" and player.video:
-            pc.addTrack(player.video)
+            track = VideoTransformTrack(player.video)
+            pc.addTrack(track)
 
     answer = await pc.createAnswer()
     await pc.setLocalDescription(answer)

@@ -1,2 +1,4 @@
-aiohttp
-aiortc
+aiohttp~=3.6.2
+aiortc~=0.9.28
+opencv-python~=4.4.0.44
+av~=8.0.2
