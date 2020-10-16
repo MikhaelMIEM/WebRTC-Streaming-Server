@@ -5,7 +5,6 @@ import os
 
 app = Flask(__name__)
 NVR_TOKEN = os.environ.get('NVR_TOKEN')
-NVR_TOKEN = '79be20cd54214a30bf2ef8347915c084'
 if not NVR_TOKEN:
     raise NameError('Environment variable $NVR_TOKEN not found')
 
@@ -20,4 +19,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=80)
