@@ -3,11 +3,16 @@ import asyncio
 import json
 import logging
 import ssl
+import os
 
 from aiohttp import web, ClientSession
 
 from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
 from aiortc.contrib.media import MediaPlayer
+
+NVR_TOKEN = os.environ.get('NVR_TOKEN')
+if not NVR_TOKEN:
+    raise NameError('Environment variable $NVR_TOKEN not found')
 
 pcs = set()
 
@@ -26,7 +31,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
 
 async def get_streams():
-    headers = {"key": "79be20cd54214a30bf2ef8347915c084"}
+    headers = {"key": NVR_TOKEN}
 
     async with ClientSession() as session:
         async with session.get('https://nvr.miem.hse.ru/api/sources/',

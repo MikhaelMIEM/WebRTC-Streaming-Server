@@ -22,7 +22,7 @@ function negotiate() {
         });
     }).then(function() {
         var offer = pc.localDescription;
-        var server_link = document.getElementById('server_link').value
+        var server_link = "http://92.53.78.98:8181/media/" + document.getElementById('cams').value.toString()
         return fetch(server_link, {
             body: JSON.stringify({
                 sdp: offer.sdp,
