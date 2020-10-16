@@ -1,21 +1,20 @@
 version: '3'
 
 services:
-        database:
-            http_server:
-                build: ./http_server/
-                restart: always
-                environment:
-                    NVR_TOKEN: 79be20cd54214a30bf2ef8347915c084
-                ports:
-                    - "80:80"
-                command: python main.py
+    http_server:
+        build: ./http_server/
+        restart: always
+        environment:
+            NVR_TOKEN: 79be20cd54214a30bf2ef8347915c084
+        ports:
+            - "80:80"
+        command: python main.py
 
-        media_server:
-                build: ./media_server/
-                restart: always
-                environment:
-                    NVR_TOKEN: 79be20cd54214a30bf2ef8347915c084
-                ports:
-                    - "8181:8181"
-                command: python WebRTCStreamingServer.py
+    media_server:
+        build: ./media_server/
+        restart: always
+        environment:
+            NVR_TOKEN: 79be20cd54214a30bf2ef8347915c084
+        ports:
+            - "8181:8181"
+        command: python WebRTCStreamingServer.py
