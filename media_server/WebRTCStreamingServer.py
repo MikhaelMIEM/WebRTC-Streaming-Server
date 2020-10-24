@@ -1,14 +1,16 @@
+import logging
 import argparse
 import asyncio
 import json
-import logging
 import ssl
 import os
+from urllib.parse import urlparse
 
 from aiohttp import web, ClientSession
-
 from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
 from aiortc.contrib.media import MediaPlayer
+
+from .cam_check import connection_available, stream_require_authentication
 
 NVR_TOKEN = os.environ.get('NVR_TOKEN')
 if not NVR_TOKEN:
@@ -30,45 +32,20 @@ class VideoTransformTrack(MediaStreamTrack):
         return frame
 
 
-async def get_streams():
-    headers = {"key": NVR_TOKEN}
-
-    async with ClientSession() as session:
-        async with session.get('https://nvr.miem.hse.ru/api/sources/',
-                               headers=headers) as resp:
-            text = await resp.text()
-            cams = json.loads(text)
-
-    streams = {
-        str(cam['id']): cam['rtsp']
-        for cam in cams
-    }
-    streams['a'] = './a.mp4'
-    streams['b'] = './b.webm'
-    streams['c'] = './c.mp4'
-
-    return streams
-
-
-async def js_cors_preflight(request):
-    request_url = request.match_info['stream']
-    streams = await get_streams()
-
-    if request_url not in streams:
-        raise web.HTTPNotFound()
-    headers = {
-        'Access-Control-Allow-Origin': '*',
-        "Access-Control-Allow-Headers": "Content-Type"
-    }
-    return web.Response(headers=headers, text="ok")
-
-
 async def offer(request):
     request_url = request.match_info['stream']
     streams = await get_streams()
 
     if request_url not in streams:
         raise web.HTTPNotFound()
+
+    play_from = streams[request_url]
+    url = urlparse(play_from)
+    if url.scheme == 'rtsp':
+        if not await connection_available(play_from, timeout=10):
+            raise web.HTTPServiceUnavailable('Can not establish connection with rtsp media source')
+        if await stream_require_authentication(play_from):
+            raise web.HTTPServiceUnavailable('rtsp stream require authentication')
 
     params = await request.json()
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
@@ -83,7 +60,6 @@ async def offer(request):
             await pc.close()
             pcs.discard(pc)
 
-    play_from = streams[request_url]
     player = MediaPlayer(play_from)
 
     await pc.setRemoteDescription(offer)
@@ -109,6 +85,30 @@ async def offer(request):
             "type": pc.localDescription.type
         })
     )
+
+
+async def js_cors_preflight(request):
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        "Access-Control-Allow-Headers": "Content-Type"
+    }
+    return web.Response(headers=headers, text="ok")
+
+
+async def get_streams():
+    headers = {"key": NVR_TOKEN}
+
+    async with ClientSession() as session:
+        async with session.get('https://nvr.miem.hse.ru/api/sources/',
+                               headers=headers) as resp:
+            text = await resp.text()
+            cams = json.loads(text)
+
+    streams = {
+        str(cam['id']): cam['rtsp']
+        for cam in cams
+    }
+    return streams
 
 
 async def on_shutdown(app):
