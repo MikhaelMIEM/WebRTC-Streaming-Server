@@ -72,4 +72,5 @@ function stop() {
     setTimeout(function() {
         pc.close();
     }, 500);
+    document.getElementById('start').style.display = 'inline-block';
 }
