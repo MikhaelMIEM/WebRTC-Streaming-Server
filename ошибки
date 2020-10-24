@@ -1,0 +1,24 @@
+1)
+
+media_server_1  | RTP: dropping old packet received too late
+media_server_1  | RTP: dropping old packet received too late
+media_server_1  |  (repeated 2 more times)
+media_server_1  | max delay reached. need to consume packet
+media_server_1  | RTP: missed 2158 packets
+media_server_1  | DTS discontinuity in stream 1: packet 98 with DTS 99729, packet 99 with DTS 539540946
+media_server_1  | RTP: dropping old packet received too late
+media_server_1  | RTP: dropping old packet received too late
+media_server_1  |  (repeated 201 more times)
+media_server_1  | Exception in callback _SelectorTransport._call_connection_lost(None)
+media_server_1  | handle: <Handle _SelectorTransport._call_connection_lost(None)>
+media_server_1  | Traceback (most recent call last):
+media_server_1  |   File "/usr/local/lib/python3.8/asyncio/events.py", line 81, in _run
+media_server_1  |     self._context.run(self._callback, *self._args)
+media_server_1  |   File "/usr/local/lib/python3.8/asyncio/selector_events.py", line 728, in _call_connection_lost
+media_server_1  |     self._protocol.connection_lost(exc)
+media_server_1  |   File "/usr/local/lib/python3.8/site-packages/aioice/ice.py", line 161, in connection_lost
+media_server_1  |     self.receiver.data_received(None, self.local_candidate.component)
+media_server_1  | AttributeError: 'NoneType' object has no attribute 'component'
+
+2) Средняя 158 хз чо
+3) 4к в центре 168 хз чо

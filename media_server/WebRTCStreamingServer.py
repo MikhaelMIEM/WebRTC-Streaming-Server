@@ -10,7 +10,6 @@ from aiohttp import web, ClientSession
 from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
 from aiortc.contrib.media import MediaPlayer
 
-from cam_check import connection_available, stream_require_authentication
 
 NVR_TOKEN = os.environ.get('NVR_TOKEN')
 if not NVR_TOKEN:
@@ -37,15 +36,15 @@ async def offer(request):
     streams = await get_streams()
 
     if request_url not in streams:
-        raise web.HTTPNotFound()
+        raise web.HTTPNotFound(text='No rtsp source related to this url')
 
     play_from = streams[request_url]
+    if not play_from:
+        raise web.HTTPBadGateway(text='NVR response with cam rtsp link is empty. Contact NVR admins to fix it')
+
     url = urlparse(play_from)
     if url.scheme == 'rtsp':
-        if not await connection_available(play_from, timeout=10):
-            raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
-        if await stream_require_authentication(play_from):
-            raise web.HTTPBadGateway(text='rtsp stream require authentication')
+        await check_rtsp_availability(play_from, timeout=10)
 
     params = await request.json()
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
@@ -109,6 +108,48 @@ async def get_streams():
         for cam in cams
     }
     return streams
+
+
+async def check_rtsp_availability(rtsp_link, timeout):
+    """
+    This function needed because some rtsp links requires
+    to authenticate and pyav lib may freeze in such cases.
+    If some rtsp link require authentication contact NVR admins to replace it with working link.
+    """
+    url = urlparse(rtsp_link)
+    ip = url.hostname
+    port = url.port if url.port else 554
+    reader = None
+    writer = None
+
+    try:
+        reader, writer = await asyncio.wait_for(asyncio.open_connection(ip, port), timeout=timeout)
+        is_available = bool(reader) and bool(writer)
+    except asyncio.TimeoutError:
+        if writer:
+            writer.close()
+            await writer.wait_closed()
+        raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
+    except OSError:
+        if writer:
+            writer.close()
+            await writer.wait_closed()
+        raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
+
+    if not is_available:
+        raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
+
+    message = f'DESCRIBE {rtsp_link} RTSP/1.0\nCSeq: 1\n\n'
+    writer.write(message.encode())
+    await writer.drain()
+
+    data = await reader.read(1000)
+    writer.close()
+    await writer.wait_closed()
+
+    describe_reply = data.decode().split()
+    if describe_reply[1] == '401':
+        raise web.HTTPBadGateway(text='rtsp stream require authentication')
 
 
 async def on_shutdown(app):
