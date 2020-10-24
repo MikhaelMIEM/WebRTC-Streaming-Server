@@ -10,7 +10,7 @@ from aiohttp import web, ClientSession
 from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
 from aiortc.contrib.media import MediaPlayer
 
-from .cam_check import connection_available, stream_require_authentication
+from cam_check import connection_available, stream_require_authentication
 
 NVR_TOKEN = os.environ.get('NVR_TOKEN')
 if not NVR_TOKEN:
