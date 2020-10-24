@@ -43,9 +43,9 @@ async def offer(request):
     url = urlparse(play_from)
     if url.scheme == 'rtsp':
         if not await connection_available(play_from, timeout=10):
-            raise web.HTTPServiceUnavailable('Can not establish connection with rtsp media source')
+            raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
         if await stream_require_authentication(play_from):
-            raise web.HTTPServiceUnavailable('rtsp stream require authentication')
+            raise web.HTTPBadGateway(text='rtsp stream require authentication')
 
     params = await request.json()
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
