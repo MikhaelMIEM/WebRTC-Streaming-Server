@@ -122,34 +122,34 @@ async def check_rtsp_availability(rtsp_link, timeout):
     reader = None
     writer = None
 
-    try:
-        reader, writer = await asyncio.wait_for(asyncio.open_connection(ip, port), timeout=timeout)
-        is_available = bool(reader) and bool(writer)
-    except asyncio.TimeoutError:
-        if writer:
-            writer.close()
-            await writer.wait_closed()
-        raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
-    except OSError:
-        if writer:
-            writer.close()
-            await writer.wait_closed()
-        raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
+    # try:
+    #     reader, writer = await asyncio.wait_for(asyncio.open_connection(ip, port), timeout=timeout)
+    #     is_available = bool(reader) and bool(writer)
+    # except asyncio.TimeoutError:
+    #     if writer:
+    #         writer.close()
+    #         await writer.wait_closed()
+    #     raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
+    # except OSError:
+    #     if writer:
+    #         writer.close()
+    #         await writer.wait_closed()
+    #     raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
+    #
+    # if not is_available:
+    #     raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
 
-    if not is_available:
-        raise web.HTTPBadGateway(text='Can not establish connection with rtsp media source')
-
-    message = f'DESCRIBE {rtsp_link} RTSP/1.0\nCSeq: 1\n\n'
-    writer.write(message.encode())
-    await writer.drain()
-
-    data = await reader.read(1000)
-    writer.close()
-    await writer.wait_closed()
-
-    describe_reply = data.decode().split()
-    if describe_reply[1] == '401':
-        raise web.HTTPBadGateway(text='rtsp stream require authentication')
+    # message = f'DESCRIBE {rtsp_link} RTSP/1.0\nCSeq: 1\n\n'
+    # writer.write(message.encode())
+    # await writer.drain()
+    #
+    # data = await reader.read(1000)
+    # writer.close()
+    # await writer.wait_closed()
+    #
+    # describe_reply = data.decode().split()
+    # if describe_reply[1] == '401':
+    #     raise web.HTTPBadGateway(text='rtsp stream require authentication')
 
 
 async def on_shutdown(app):
