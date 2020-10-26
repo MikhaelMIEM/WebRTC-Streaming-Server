@@ -107,6 +107,7 @@ async def get_streams():
         str(cam['id']): cam['rtsp']
         for cam in cams
     }
+    streams['test'] = './test.webm'
     return streams
 
 
