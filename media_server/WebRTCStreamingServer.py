@@ -63,9 +63,9 @@ async def offer(request):
 
     await pc.setRemoteDescription(offer)
     for t in pc.getTransceivers():
-        if t.kind == "audio" and player.audio:
-            pc.addTrack(player.audio)
-        elif t.kind == "video" and player.video:
+        # if t.kind == "audio" and player.audio:
+        #     pc.addTrack(player.audio)
+        if t.kind == "video" and player.video:
             track = VideoTransformTrack(player.video)
             pc.addTrack(track)
 
