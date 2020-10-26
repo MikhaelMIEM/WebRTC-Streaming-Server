@@ -19,7 +19,7 @@
 </head>
 <body>
 {% block content %}
-<h1>Enter server link</h1>
+<h1>Media sources</h1>
 <select id="cams">
     {% for cam in cams %}
         <option value="{{cam['id']}}">{{cam['name']}} {{cam['id']}}</option>
@@ -29,9 +29,9 @@
 <button id="stop" style="display: none" onclick="stop()">Stop</button>
 
 <div id="media">
-    <h2>Media</h2>
-<!--    <audio id="audio" autoplay=></audio>-->
-    <video id="video" autoplay playsinline></video>
+    <h2>Player</h2>
+    <audio id="audio" autoplay=></audio>
+    <video id="video" autoplay muted playsinline></video>
 </div>
 
 
