@@ -15,6 +15,7 @@ def home():
     response = requests.get('https://nvr.miem.hse.ru/api/sources/',
                             headers=headers)
     cams = response.json()
+    cams.append({'id': 'test','name': 'test'})
     return render_template("index.html", cams=cams)
 
 
