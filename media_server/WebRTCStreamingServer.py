@@ -104,7 +104,7 @@ async def js_cors_preflight(request):
     return web.Response(headers=headers, text="ok")
 
 
-async def get_streams(nvr_token):
+async def get_cams(nvr_token):
     headers = {"key": nvr_token}
 
     async with ClientSession() as session:
@@ -112,14 +112,17 @@ async def get_streams(nvr_token):
                                headers=headers) as resp:
             text = await resp.text()
             cams = json.loads(text)
+    cams.append({'id': 'test', 'rtsp': './test.webm'})
+    return cams
 
+
+async def get_streams(nvr_token):
+    cams = await get_cams(nvr_token)
     streams = {
         str(cam['id']): cam['rtsp']
         for cam in cams
     }
-    streams['test'] = './test.webm'
     return streams
-
 
 async def check_rtsp_availability(rtsp_link, timeout):
     """
