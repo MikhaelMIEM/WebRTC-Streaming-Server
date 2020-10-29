@@ -22,7 +22,7 @@ function negotiate() {
         });
     }).then(function() {
         var offer = pc.localDescription;
-        var server_link = "https://92.53.78.98:443/media/" + document.getElementById('cams').value.toString()
+        var server_link = "https://media.auditory.ru:443/media/" + document.getElementById('cams').value.toString()
         return fetch(server_link, {
             body: JSON.stringify({
                 sdp: offer.sdp,
