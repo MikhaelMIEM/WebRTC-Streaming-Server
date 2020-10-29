@@ -166,12 +166,10 @@ async def on_shutdown(app):
     await asyncio.gather(*coros)
     pcs.clear()
 
-
+@aiojinja2.template('index.html')
 async def index(request):
     cams = await get_streams(args.nvr_token)
-    print(cams)
-    response = aiojinja2.render_template('index.html', request, cams)
-    return response
+    return cams
 
 
 if __name__ == "__main__":
