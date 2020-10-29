@@ -169,6 +169,8 @@ async def on_shutdown(app):
 @aiojinja2.template('index.html')
 async def index(request):
     cams = await get_streams(args.nvr_token)
+    print(args.nvr_token)
+    print(cams)
     return cams
 
 
