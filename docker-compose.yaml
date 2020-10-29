@@ -1,16 +1,16 @@
 version: '3'
 
 services:
-    http_server:
-        build: ./http_server/
-        restart: always
-        volumes:
-            - ${SSL_KEY}:/privkey.pem
-            - ${SSL_CERT}:/fullchain.pem
-        ports:
-            - "443:443"
-        command:
-            python main.py -p 443 --nvr-token ${NVR_TOKEN} --ssl-key /privkey.pem --ssl-cert /fullchain.pem
+#    http_server:
+#        build: ./http_server/
+#        restart: always
+#        volumes:
+#            - ${SSL_KEY}:/privkey.pem
+#            - ${SSL_CERT}:/fullchain.pem
+#        ports:
+#            - "443:443"
+#        command:
+#            python main.py -p 443 --nvr-token ${NVR_TOKEN} --ssl-key /privkey.pem --ssl-cert /fullchain.pem
 
     media_server:
         build: ./media_server/
