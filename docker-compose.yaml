@@ -4,21 +4,21 @@ services:
     http_server:
         build: ./http_server/
         restart: always
-        environment:
-            NVR_TOKEN: ${NVR_TOKEN}
-            SSL_KEY: ${SSL_KEY}
-            SSL_CERT: ${SSL_CERT}
-            PORT: 443
+        volumes:
+            - ${SSL_KEY}:~/privkey.pem
+            - ${SSL_CERT}:~/fullchain.pem
         ports:
             - "443:443"
+        command:
+            python main.py -p 443 --nvr-token ${NVR_TOKEN} --ssl-key ~/privkey.pem --ssl-cert ~/fullchain.pem
 
     media_server:
         build: ./media_server/
         restart: always
-        environment:
-            NVR_TOKEN: ${NVR_TOKEN}
-            SSL_KEY: ${SSL_KEY}
-            SSL_CERT: ${SSL_CERT}
-            PORT: 8181
+        volumes:
+            - ${SSL_KEY}:~/privkey.pem
+            - ${SSL_CERT}:~/fullchain.pem
         ports:
             - "8181:8181"
+        command:
+            python WebRTCStreamingServer.py --port 8181 --nvr-token ${NVR_TOKEN} --key-file ~/privkey.pem --cert-file ~/fullchain.pem
