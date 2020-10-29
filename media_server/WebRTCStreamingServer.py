@@ -169,10 +169,14 @@ async def on_shutdown(app):
     await asyncio.gather(*coros)
     pcs.clear()
 
+
 @aiojinja2.template('index.html')
 async def index(request):
     cams = await get_cams(args.nvr_token)
     return {'cams': cams}
+
+
+
 
 
 if __name__ == "__main__":
@@ -197,5 +201,6 @@ if __name__ == "__main__":
 
     aiojinja2.setup(app, loader=jinja2.FileSystemLoader('/templates/'))
     app.router.add_get('/', index)
+    app.router.add_static('/static/', path='/static')
 
     web.run_app(app, host=args.host, port=args.port, ssl_context=ssl_context)
