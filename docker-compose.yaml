@@ -4,10 +4,10 @@ services:
     http_server:
         build: ./http_server/
         restart: always
-        environment:
-            NVR_TOKEN: 79be20cd54214a30bf2ef8347915c084
-            SSL_KEY: /etc/letsencrypt/live/media.auditory.ru/privkey.pem
-            SSL_CERT: /etc/letsencrypt/live/media.auditory.ru/fullchain.pem
+        args:
+            NVR_TOKEN: ${NVR_TOKEN}
+            SSL_KEY: ${SSL_KEY}
+            SSL_CERT: ${SSL_CERT}
             PORT: 443
         ports:
             - "443:443"
@@ -16,10 +16,10 @@ services:
     media_server:
         build: ./media_server/
         restart: always
-        environment:
-            NVR_TOKEN: 79be20cd54214a30bf2ef8347915c084
-            SSL_KEY: /etc/letsencrypt/live/media.auditory.ru/privkey.pem
-            SSL_CERT: /etc/letsencrypt/live/media.auditory.ru/fullchain.pem
+        args:
+            NVR_TOKEN: ${NVR_TOKEN}
+            SSL_KEY: ${SSL_KEY}
+            SSL_CERT: ${SSL_CERT}
             PORT: 8181
         ports:
             - "8181:8181"
