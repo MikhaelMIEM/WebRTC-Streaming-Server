@@ -4,7 +4,7 @@ services:
     http_server:
         build: ./http_server/
         restart: always
-        args:
+        environment:
             NVR_TOKEN: ${NVR_TOKEN}
             SSL_KEY: ${SSL_KEY}
             SSL_CERT: ${SSL_CERT}
@@ -16,7 +16,7 @@ services:
     media_server:
         build: ./media_server/
         restart: always
-        args:
+        environment:
             NVR_TOKEN: ${NVR_TOKEN}
             SSL_KEY: ${SSL_KEY}
             SSL_CERT: ${SSL_CERT}
