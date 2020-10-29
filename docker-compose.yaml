@@ -11,7 +11,6 @@ services:
             PORT: 443
         ports:
             - "443:443"
-        command: python main.py
 
     media_server:
         build: ./media_server/
@@ -23,4 +22,3 @@ services:
             PORT: 8181
         ports:
             - "8181:8181"
-        command: python WebRTCStreamingServer.py
