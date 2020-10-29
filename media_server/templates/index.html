@@ -22,7 +22,7 @@
 <h1>Media sources</h1>
 <select id="cams">
     {% for cam in cams %}
-        <option value="{{cam['id']}}">{{cam['name']}} {{cam['id']}}</option>
+        <option value="{{cam.id}}">{{cam.name}} {{cam.id}}</option>
     {% endfor %}
 </select>
 <button id="start" onclick="start()">Start</button>
