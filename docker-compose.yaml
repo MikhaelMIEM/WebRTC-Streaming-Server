@@ -6,8 +6,11 @@ services:
         restart: always
         environment:
             NVR_TOKEN: 79be20cd54214a30bf2ef8347915c084
+            SSL_KEY: /etc/letsencrypt/live/media.auditory.ru/privkey.pem
+            SSL_CERT: /etc/letsencrypt/live/media.auditory.ru/fullchain.pem
+            PORT: 443
         ports:
-            - "80:80"
+            - "443:443"
         command: python main.py
 
     media_server:
@@ -15,6 +18,9 @@ services:
         restart: always
         environment:
             NVR_TOKEN: 79be20cd54214a30bf2ef8347915c084
+            SSL_KEY: /etc/letsencrypt/live/media.auditory.ru/privkey.pem
+            SSL_CERT: /etc/letsencrypt/live/media.auditory.ru/fullchain.pem
+            PORT: 8181
         ports:
             - "8181:8181"
         command: python WebRTCStreamingServer.py

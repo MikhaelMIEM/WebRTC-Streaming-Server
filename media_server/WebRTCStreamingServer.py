@@ -11,11 +11,19 @@ from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
 from aiortc.contrib.media import MediaPlayer
 
 
-NVR_TOKEN = os.environ.get('NVR_TOKEN')
-if not NVR_TOKEN:
-    raise NameError('Environment variable $NVR_TOKEN not found')
-
+args = None
 pcs = set()
+
+
+def get_arguments():
+    parser = argparse.ArgumentParser(description="WebRTC streaming server")
+    parser.add_argument("--cert-file", help="SSL certificate file (for HTTPS)")
+    parser.add_argument("--key-file", help="SSL key file (for HTTPS)")
+    parser.add_argument("--host", default="0.0.0.0", help="Host for server (default: 0.0.0.0)")
+    parser.add_argument("--port", type=int, default=8181, help="Server port (default: 8181)")
+    parser.add_argument("--nvr-token", help="NVR api token", required=True)
+    parser.add_argument("--verbose", "-v", action="count")
+    return parser.parse_args()
 
 
 class VideoTransformTrack(MediaStreamTrack):
@@ -33,7 +41,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
 async def offer(request):
     request_url = request.match_info['stream']
-    streams = await get_streams()
+    streams = await get_streams(args.nvr_token)
 
     if request_url not in streams:
         raise web.HTTPNotFound(text='No rtsp source related to this url')
@@ -94,8 +102,8 @@ async def js_cors_preflight(request):
     return web.Response(headers=headers, text="ok")
 
 
-async def get_streams():
-    headers = {"key": NVR_TOKEN}
+async def get_streams(nvr_token):
+    headers = {"key": nvr_token}
 
     async with ClientSession() as session:
         async with session.get('https://nvr.miem.hse.ru/api/sources/',
@@ -158,17 +166,7 @@ async def on_shutdown(app):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="WebRTC streaming server")
-    parser.add_argument("--cert-file", help="SSL certificate file (for HTTPS)")
-    parser.add_argument("--key-file", help="SSL key file (for HTTPS)")
-    parser.add_argument(
-        "--host", default="0.0.0.0", help="Host for server (default: 0.0.0.0)"
-    )
-    parser.add_argument(
-        "--port", type=int, default=8181, help="Server port (default: 8181)"
-    )
-    parser.add_argument("--verbose", "-v", action="count")
-    args = parser.parse_args()
+    args = get_arguments()
 
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
