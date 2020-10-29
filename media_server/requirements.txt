@@ -1,2 +1,3 @@
-aiohttp~=3.6.2
-aiortc~=0.9.28
+aiohttp
+aiortc
+aiohttp-jinja2

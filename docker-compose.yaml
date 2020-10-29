@@ -19,6 +19,6 @@ services:
             - ${SSL_KEY}:/privkey.pem
             - ${SSL_CERT}:/fullchain.pem
         ports:
-            - "8181:8181"
+            - "443:443"
         command:
-            python WebRTCStreamingServer.py --port 8181 --nvr-token ${NVR_TOKEN} --key-file /privkey.pem --cert-file /fullchain.pem
+            python WebRTCStreamingServer.py --port 443 --nvr-token ${NVR_TOKEN} --key-file /privkey.pem --cert-file /fullchain.pem

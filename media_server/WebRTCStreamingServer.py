@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 from aiohttp import web, ClientSession
 from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
 from aiortc.contrib.media import MediaPlayer
+import aiohttp_jinja2
+import jinja2
 
 
 args = None
@@ -165,6 +167,12 @@ async def on_shutdown(app):
     pcs.clear()
 
 
+async def index(request):
+    cams = await get_streams(args.nvr_token)
+    response = aiohttp_jinja2.render_template('index.html', request, cams)
+    return response
+
+
 if __name__ == "__main__":
     args = get_arguments()
 
@@ -184,5 +192,9 @@ if __name__ == "__main__":
     app = web.Application()
     app.add_subapp("/media/", media)
     app.on_shutdown.append(on_shutdown)
+
+    aiohttp_jinja2.setup(app,
+                         loader=jinja2.FileSystemLoader('./templates'))
+    app.router.add_get('/', index)
 
     web.run_app(app, host=args.host, port=args.port, ssl_context=ssl_context)
