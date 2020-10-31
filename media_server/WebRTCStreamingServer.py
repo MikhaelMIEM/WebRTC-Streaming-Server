@@ -16,6 +16,12 @@ import jinja2
 args = None
 pcs = set()
 
+cors_headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': "Origin, X-Requested-With, Content-Type, Accept"
+}
+
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="WebRTC streaming server")
@@ -84,11 +90,7 @@ async def offer(request):
 
     return web.Response(
         content_type="application/json",
-        headers={
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-        },
+        headers=cors_headers,
         text=json.dumps({
             "sdp": pc.localDescription.sdp,
             "type": pc.localDescription.type
@@ -97,10 +99,7 @@ async def offer(request):
 
 
 async def js_cors_preflight(request):
-    headers = {
-        'Access-Control-Allow-Origin': '*',
-        "Access-Control-Allow-Headers": "Content-Type"
-    }
+    headers = cors_headers
     return web.Response(headers=headers, text="ok")
 
 
