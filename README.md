@@ -12,8 +12,8 @@ $ sudo docker-compose up
  WebRTC взаимодействие с сервером доступно по [hostname/media/{id}]()
  где **id** - id камеры из https://nvr.miem.hse.ru/api/sources/
  
- Пример **[HTML](./media_server/templates/index.html)** и
- **[JS](./media_server/static/client.js)** 
+ Пример [HTML](./media_server/templates/index.html) и
+ [JS](./media_server/static/client.js) 
  клиента
  
  Также пример клиента и проверка работоспособности сервера 
