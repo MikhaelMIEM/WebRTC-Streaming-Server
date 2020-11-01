@@ -1,30 +1,21 @@
 # WebRTC streaming server
-WebRTC стриминговый сервер на языке **python**
-
-# Зависимости
-
-```sh
-$ python3.8 -m pip install aiohttp aiortc
-```
+WebRTC стриминговый сервер на языке **Python**
 
 # Запуск
-```sh
-$ python3.8 WebRTCStreamingServer.py
 ```
-Пока захардкожено несколько медиа источников для тестов, в WebRTC, после запуска сервера, они доступны на:
-```sh
-http://127.0.0.1:8181/media/cam52
-http://127.0.0.1:8181/media/cam53
-http://127.0.0.1:8181/media/cam17
+$ sudo docker-compose build
+$ sudo docker-compose up
 ```
-**Все медиа источники - RTSP потоки с камер в МИЭМе, не забудьте подключиться к сети вышки!**
-# Клиент
-В папке **./'client example'** находится пример получения потока с сервера. Это html страничка и js файл, их можно раздать с помощью любого web сервера, например:
-```sh
-$ cd ./'client example'
-$ python3.8 -m http.server
-```
-Тогда html страничка-клиент будет доступна по адресу
-```sh
-http://127.0.0.1:8000/
-```
+
+# Использование
+ 
+ WebRTC взаимодействие с сервером доступно по [hostname/media/{id}]()
+ где **id** - id камеры из https://nvr.miem.hse.ru/api/sources/
+ 
+ Пример **[HTML](./media_server/templates/index.html)** и
+ **[JS](./media_server/static/client.js)** 
+ клиента
+ 
+ Также пример клиента и проверка работоспособности сервера 
+ доступны на https://media.auditory.ru/
+
