@@ -111,7 +111,6 @@ async def get_cams(nvr_token):
                                headers=headers) as resp:
             text = await resp.text()
             cams = json.loads(text)
-    cams.append({'id': 'test', 'rtsp': './test.webm'})
     return cams
 
 
