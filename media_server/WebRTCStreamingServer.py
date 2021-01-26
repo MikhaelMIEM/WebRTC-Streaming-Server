@@ -12,6 +12,18 @@ from aiortc.contrib.media import MediaPlayer
 import aiohttp_jinja2 as aiojinja2
 import jinja2
 
+# nn
+from tensorflow.keras.applications.resnet50 import ResNet50
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
+from tensorflow.keras.utils import get_file
+import numpy as np
+from datetime import datetime
+import keras
+
+model = ResNet50(weights='imagenet')
+# nn
+
 
 args = None
 pcs = set()
@@ -40,10 +52,21 @@ class VideoTransformTrack(MediaStreamTrack):
     def __init__(self, track):
         super().__init__()
         self.track = track
+        self.timestamp_sec = -1
 
     async def recv(self):
         frame = await self.track.recv()
-        frame = frame.reformat(width=320, height=240)
+        if datetime.now().second != self.timestamp_sec:
+            x = frame.to_ndarray()
+            x = np.expand_dims(x, axis=0)
+            x = preprocess_input(x)
+            x = keras.preprocessing.image.img_to_array(img)
+            x = np.expand_dims(x, axis=0)
+            x = preprocess_input(x)
+            preds = model.predict(x)
+            self.timestamp_sec = datetime.now().second
+            print(*(i[1] + '  ' for i in decode_predictions(preds, top=3)[0]))
+        # frame = frame.reformat(width=320, height=240)
         return frame
 
 
