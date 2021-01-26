@@ -58,10 +58,9 @@ class VideoTransformTrack(MediaStreamTrack):
         frame = await self.track.recv()
         if datetime.now().second != self.timestamp_sec:
             im = frame.to_image()
-            im = im.thumbnail((224, 224))
-            x = np.array(im)
+            im = im.resize((224, 224))
+            x = image.img_to_array(im)
             x = np.expand_dims(x, axis=0)
-            print(x.shape)
             x = preprocess_input(x)
             preds = model.predict(x)
             self.timestamp_sec = datetime.now().second
