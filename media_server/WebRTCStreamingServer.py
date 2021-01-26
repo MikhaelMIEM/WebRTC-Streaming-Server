@@ -57,7 +57,7 @@ class VideoTransformTrack(MediaStreamTrack):
     async def recv(self):
         frame = await self.track.recv()
         if datetime.now().second != self.timestamp_sec:
-            x = frame.reformat(width=224, height=224).to_ndarray()
+            x = frame.to_ndarray(width=224, height=224)
             x = np.expand_dims(x, axis=0)
             x = preprocess_input(x)
             preds = model.predict(x)
