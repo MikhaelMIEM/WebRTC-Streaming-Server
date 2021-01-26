@@ -4,3 +4,4 @@ aiohttp-jinja2
 numpy
 keras
 tensorflow
+Pillow
