@@ -60,9 +60,6 @@ class VideoTransformTrack(MediaStreamTrack):
             x = frame.to_ndarray()
             x = np.expand_dims(x, axis=0)
             x = preprocess_input(x)
-            x = keras.preprocessing.image.img_to_array(img)
-            x = np.expand_dims(x, axis=0)
-            x = preprocess_input(x)
             preds = model.predict(x)
             self.timestamp_sec = datetime.now().second
             print(*(i[1] + '  ' for i in decode_predictions(preds, top=3)[0]))
