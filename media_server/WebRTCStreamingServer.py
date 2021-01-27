@@ -20,8 +20,11 @@ from tensorflow.keras.utils import get_file
 import numpy as np
 from datetime import datetime
 import keras
+from PIL import ImageDraw
 
 model = ResNet50(weights='imagenet')
+
+cam_class = {}
 # nn
 
 
@@ -49,12 +52,15 @@ def get_arguments():
 class VideoTransformTrack(MediaStreamTrack):
     kind = "video"
 
-    def __init__(self, track):
+    def __init__(self, track, cam_id):
         super().__init__()
         self.track = track
         self.timestamp_sec = -1
+        self.last_text = ''
+        self.cam_id = cam_id
 
     async def recv(self):
+        global cam_class
         frame = await self.track.recv()
         if datetime.now().second != self.timestamp_sec:
             im = frame.to_image()
@@ -64,7 +70,8 @@ class VideoTransformTrack(MediaStreamTrack):
             x = preprocess_input(x)
             preds = model.predict(x)
             self.timestamp_sec = datetime.now().second
-            print(*(i[1] + '  ' for i in decode_predictions(preds, top=3)[0]))
+            self.last_text = '   '.join((i[1] for i in decode_predictions(preds, top=3)[0]))
+            cam_class[self.cam_id] = self.last_text
         # frame = frame.reformat(width=320, height=240)
         return frame
 
@@ -104,7 +111,7 @@ async def offer(request):
         if t.kind == "audio" and player.audio:
             pc.addTrack(player.audio)
         elif t.kind == "video" and player.video:
-            track = VideoTransformTrack(player.video)
+            track = VideoTransformTrack(player.video, request_url)
             pc.addTrack(track)
 
     answer = await pc.createAnswer()
@@ -196,7 +203,12 @@ async def index(request):
     return {'cams': cams}
 
 
-
+async def classify(request):
+    cam_id = request.match_info['stream']
+    global cam_class
+    text = cam_class.get(cam_id)
+    headers = cors_headers
+    return web.Response(headers=headers, text=text)
 
 
 if __name__ == "__main__":
@@ -215,8 +227,12 @@ if __name__ == "__main__":
     media.router.add_post("/{stream}", offer)
     media.router.add_options("/{stream}", js_cors_preflight)
 
+    classifier = web.Application()
+    classifier.router.add_post("/{stream}", classify)
+
     app = web.Application()
     app.add_subapp("/media/", media)
+    app.add_subapp("/classify/")
     app.on_shutdown.append(on_shutdown)
 
     aiojinja2.setup(app, loader=jinja2.FileSystemLoader('/templates/'))
