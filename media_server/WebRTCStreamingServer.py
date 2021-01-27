@@ -232,7 +232,7 @@ if __name__ == "__main__":
 
     app = web.Application()
     app.add_subapp("/media/", media)
-    app.add_subapp("/classify/")
+    app.add_subapp("/classify/", classifier)
     app.on_shutdown.append(on_shutdown)
 
     aiojinja2.setup(app, loader=jinja2.FileSystemLoader('/templates/'))
