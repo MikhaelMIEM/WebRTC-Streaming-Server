@@ -84,14 +84,16 @@ function sleepFor( sleepDuration ){
 
 function classify() {
     var url = "https://media.auditory.ru:443/classify/" + document.getElementById('cams').value.toString();
-    var Http = new XMLHttpRequest();
-    Http.open("POST", url);
     globalThis.classify_stop = false;
     while(!globalThis.classify_stop) {
         sleepFor(1);
-        Http.send();
-        Http.onreadystatechange = (e) => {
-            console.log(Http.responseText)
+        {
+            var Http = new XMLHttpRequest();
+            Http.open("POST", url);
+            Http.send();
+            Http.onreadystatechange = (e) => {
+                console.log(Http.responseText)
+            }
         }
     }
 }
