@@ -74,3 +74,28 @@ function stop() {
     }, 500);
     document.getElementById('start').style.display = 'inline-block';
 }
+
+var classify_stop = false;
+
+function sleepFor( sleepDuration ){
+    var now = new Date().getTime();
+    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ }
+}
+
+function classify() {
+    var url = "https://media.auditory.ru:443/classify/" + document.getElementById('cams').value.toString();
+    const Http = new XMLHttpRequest();
+    Http.open("POST", url);
+    globalThis.classify_stop = false;
+    while(!globalThis.classify_stop) {
+        Http.send();
+        Http.onreadystatechange = (e) => {
+            console.log(Http.responseText)
+        }
+        sleepFor(1);
+    }
+}
+
+function stopClassify() {
+    globalThis.classify_stop = true;
+}
