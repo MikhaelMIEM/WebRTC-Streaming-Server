@@ -210,7 +210,10 @@ async def index(request):
 async def classify(request):
     cam_id = request.match_info['stream']
     cams = await get_cams(args.nvr_token)
-    cam_info = next(cam for cam in cams if str(cam['id']) == cam_id)
+    cam_info = [cam for cam in cams if str(cam['id']) == cam_id]
+    if not cam_info:
+        raise web.HTTPNotFound(text='No rtsp source related to this url')
+    cam_info = cam_info[0]
     play_from = cam_info['rtsp']
 
     if cam_id not in cam_onvif:
