@@ -217,7 +217,7 @@ async def classify(request):
     play_from = cam_info['rtsp']
 
     if cam_id not in cam_onvif:
-        cam_onvif[cam_id] = ONVIFCameraControl((cam_info['ip'], cam_info['port']), 'admin', 'Supervisor')
+        cam_onvif[cam_id] = ONVIFCameraControl((cam_info['ip'], int(cam_info['port'])), 'admin', 'Supervisor')
     img_url = cam_onvif[cam_id].get_snapshot_uri()
     img_path = get_file(str(time()), origin=img_url)
     img = image.load_img(img_path, target_size=(224, 224))
