@@ -23,6 +23,7 @@ from datetime import datetime
 import keras
 from PIL import ImageDraw
 from urllib.parse import urlparse
+from time import time
 
 model = ResNet50(weights='imagenet')
 
