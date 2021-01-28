@@ -79,7 +79,7 @@ var classify_obj;
 
 function classify() {
     var url = "https://media.auditory.ru:443/classify/" + document.getElementById('cams').value.toString();
-    globalThis.classify_stop = setInterval(function() {
+    classify_obj = setInterval(function() {
             const Http = new XMLHttpRequest();
             Http.open("POST", url);
             Http.send();
