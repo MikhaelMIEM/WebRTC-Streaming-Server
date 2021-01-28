@@ -229,6 +229,7 @@ if __name__ == "__main__":
 
     classifier = web.Application()
     classifier.router.add_post("/{stream}", classify)
+    classifier.router.add_options("/{stream}", js_cors_preflight)
 
     app = web.Application()
     app.add_subapp("/media/", media)
