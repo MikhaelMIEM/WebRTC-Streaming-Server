@@ -75,29 +75,21 @@ function stop() {
     document.getElementById('start').style.display = 'inline-block';
 }
 
-var classify_stop = false;
-
-function sleepFor( sleepDuration ){
-    var now = new Date().getTime();
-    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ }
-}
+var classify_obj;
 
 function classify() {
     var url = "https://media.auditory.ru:443/classify/" + document.getElementById('cams').value.toString();
-    globalThis.classify_stop = false;
-    while(!globalThis.classify_stop) {
-        sleepFor(1);
-        {
-            var Http = new XMLHttpRequest();
+    globalThis.classify_stop = setInterval(function() {
+            const Http = new XMLHttpRequest();
             Http.open("POST", url);
             Http.send();
-            Http.onreadystatechange = (e) => {
-                console.log(Http.responseText)
+            Http.onload = () => {
+                console.log(Http.responseText);
             }
-        }
-    }
+    }, 1000);
 }
 
 function stopClassify() {
-    globalThis.classify_stop = true;
+    console.log('Stop classify');
+    clearInterval(timer);
 }
