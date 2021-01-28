@@ -222,7 +222,7 @@ async def get_link(request):
     if not play_from:
         raise web.HTTPBadGateway(text='NVR response with cam rtsp link is empty. Contact NVR admins to fix it')
 
-    return web.Response(headers=headers, text=play_from)
+    return web.Response(headers=cors_headers, text=play_from)
 
 
 
