@@ -211,6 +211,21 @@ async def classify(request):
     return web.Response(headers=headers, text=text)
 
 
+async def get_link(request):
+    request_url = request.match_info['stream']
+    streams = await get_streams(args.nvr_token)
+
+    if request_url not in streams:
+        raise web.HTTPNotFound(text='No rtsp source related to this url')
+
+    play_from = streams[request_url]
+    if not play_from:
+        raise web.HTTPBadGateway(text='NVR response with cam rtsp link is empty. Contact NVR admins to fix it')
+
+    return web.Response(headers=headers, text=play_from)
+
+
+
 if __name__ == "__main__":
     args = get_arguments()
 
@@ -223,17 +238,22 @@ if __name__ == "__main__":
     else:
         ssl_context = None
 
-    media = web.Application()
-    media.router.add_post("/{stream}", offer)
-    media.router.add_options("/{stream}", js_cors_preflight)
+    # media = web.Application()
+    # media.router.add_post("/{stream}", offer)
+    # media.router.add_options("/{stream}", js_cors_preflight)
 
     classifier = web.Application()
     classifier.router.add_post("/{stream}", classify)
     classifier.router.add_options("/{stream}", js_cors_preflight)
 
+    link_getter = web.Application()
+    link_getter.router.add_post("/{stream}", get_link)
+    link_getter.router.add_options("/{stream}", js_cors_preflight)
+
     app = web.Application()
-    app.add_subapp("/media/", media)
+    # app.add_subapp("/media/", media)
     app.add_subapp("/classify/", classifier)
+    app.add_subapp("/link/", link_getter)
     app.on_shutdown.append(on_shutdown)
 
     aiojinja2.setup(app, loader=jinja2.FileSystemLoader('/templates/'))
