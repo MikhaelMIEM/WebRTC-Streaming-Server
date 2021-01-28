@@ -91,5 +91,5 @@ function classify() {
 
 function stopClassify() {
     console.log('Stop classify');
-    clearInterval(timer);
+    clearInterval(classify_obj);
 }
