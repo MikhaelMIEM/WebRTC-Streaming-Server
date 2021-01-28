@@ -17,14 +17,17 @@ from tensorflow.keras.applications.resnet50 import ResNet50
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
 from tensorflow.keras.utils import get_file
+from ONVIFCameraControl import ONVIFCameraControl
 import numpy as np
 from datetime import datetime
 import keras
 from PIL import ImageDraw
+from urllib.parse import urlparse
 
 model = ResNet50(weights='imagenet')
 
 cam_class = {}
+cam_onvif = {}
 # nn
 
 
@@ -205,10 +208,22 @@ async def index(request):
 
 async def classify(request):
     cam_id = request.match_info['stream']
-    global cam_class
-    text = cam_class.get(cam_id)
-    headers = cors_headers
-    return web.Response(headers=headers, text=text)
+    cams = await get_cams(args.nvr_token)
+    cam_info = next(cam for cams if cam['id'] == cam_id)
+    play_from = cam_info['rtsp']
+
+    if cam_id not in cam_onvif:
+        cam_onvif[cam_id] = ONVIFCameraControl((cam_info['ip'], cam_info['port']), 'admin', 'Supervisor')
+    img_url = cam_onvif[cam_id].get_snapshot_uri()
+    img_path = get_file(str(time()), origin=img_url)
+    img = image.load_img(img_path, target_size=(224, 224))
+    x = image.img_to_array(img)
+    x = keras.preprocessing.image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    preds = model.predict(x)
+    text = str([i[1] for i in decode_predictions(preds, top=3)[0]])
+    return web.Response(headers=cors_headers, text=text)
 
 
 async def get_link(request):
