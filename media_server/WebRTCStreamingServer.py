@@ -231,7 +231,7 @@ async def classify(request):
     im = None
     with open(img_path, 'wb') as file:
         file.write(response.content)
-        b = BytesIO()
+        b = io.BytesIO()
         file.seek(15, 0)
 
         b.write(file.read())
