@@ -24,6 +24,7 @@ import keras
 from PIL import ImageDraw
 from urllib.parse import urlparse
 from time import time
+import requests
 
 model = ResNet50(weights='imagenet')
 
@@ -219,7 +220,17 @@ async def classify(request):
     if cam_id not in cam_onvif:
         cam_onvif[cam_id] = ONVIFCameraControl((cam_info['ip'], int(cam_info['port'])), 'admin', 'Supervisor')
     img_url = cam_onvif[cam_id].get_snapshot_uri()
-    img_path = get_file(str(time()), origin=img_url)
+    directory = '~/.keras/datasets/'
+    img_path = directory + str(time())
+
+    session = requests.Session()
+    session.auth = ('admin', 'Supervisor')
+    auth = session.post(img_url)
+    response = session.get(img_url)
+    with open(img_path, 'wb') as file:
+        file.write(response.content)
+
+    # img_path = get_file(str(time()), origin=img_url)
     img = image.load_img(img_path, target_size=(224, 224))
     x = image.img_to_array(img)
     x = keras.preprocessing.image.img_to_array(img)
