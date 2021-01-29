@@ -220,7 +220,7 @@ async def classify(request):
     if cam_id not in cam_onvif:
         cam_onvif[cam_id] = ONVIFCameraControl((cam_info['ip'], int(cam_info['port'])), 'admin', 'Supervisor')
     img_url = cam_onvif[cam_id].get_snapshot_uri()
-    directory = '~/.keras/'
+    directory = '~/'
     img_path = directory + str(time())
 
     session = requests.Session()
