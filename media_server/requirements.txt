@@ -5,5 +5,4 @@ aiortc
 numpy
 keras
 tensorflow
-ONVIFCameraControl
-requests
+rtsp

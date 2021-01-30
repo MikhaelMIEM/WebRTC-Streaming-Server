@@ -17,20 +17,20 @@ from tensorflow.keras.applications.resnet50 import ResNet50
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
 from tensorflow.keras.utils import get_file
-from ONVIFCameraControl import ONVIFCameraControl
 import numpy as np
 from datetime import datetime
 import keras
 from PIL import ImageDraw, Image, ImageFile
 from urllib.parse import urlparse
 from time import time
-import requests
+import rtsp
 import io
 
 model = ResNet50(weights='imagenet')
 
 cam_class = {}
 cam_onvif = {}
+cam_rtsp = {}
 # nn
 
 
@@ -218,19 +218,15 @@ async def classify(request):
     cam_info = cam_info[0]
     play_from = cam_info['rtsp']
 
-    if cam_id not in cam_onvif:
-        cam_onvif[cam_id] = ONVIFCameraControl((cam_info['ip'], int(cam_info['port'])), 'admin', 'Supervisor')
-    img_url = cam_onvif[cam_id].get_snapshot_uri()
-    # img_path = '/' + str(time())
-    # ImageFile.LOAD_TRUNCATED_IMAGES = True
+    if cam_id not in cam_rtsp:
+        cam_rtsp[cam_id] = rtsp.Client(play_from)
+    img = cam_onvif[cam_id].read()
+    print('img type is' + type(img))
+    img = Image(img)
 
-    session = requests.Session()
-    session.auth = ('admin', 'Supervisor')
-    auth = session.post(img_url)
-    # response = session.get(img_url)
-    img_path = get_file(str(time()), origin=img_url)
-    img = image.load_img(img_path, target_size=(224, 224))
-    # im = im.resize((224, 224))
+    # img_path = get_file(str(time()), origin=img_url)
+    # img = image.load_img(img_path, target_size=(224, 224))
+    im = im.resize((224, 224))
     # x = image.img_to_array(im)
     # img_path = get_file(str(time()), origin=img_url)
     # img = image.load_img(img_path, target_size=(224, 224))
