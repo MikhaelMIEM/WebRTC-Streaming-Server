@@ -219,17 +219,18 @@ async def classify(request):
     play_from = cam_info['rtsp']
 
     if cam_id not in cam_rtsp:
-        cam_rtsp[cam_id] = rtsp.Client(play_from)
-    im = cam_rtsp[cam_id].read()
+        cam_rtsp[cam_id] = {}
+        cam_rtsp[cam_id]['client'] = rtsp.Client(play_from)
+        cam_rtsp[cam_id]['time'] = time()
+
+    if (time() - cam_rtsp[cam_id]['time']) > 120:
+        cam_rtsp[cam_id]['client'] = rtsp.Client(play_from)
+        cam_rtsp[cam_id]['time'] = time()
+
+    im = cam_rtsp[cam_id]['client'].read()
     if im:
-        # img_path = get_file(str(time()), origin=img_url)
-        # img = image.load_img(img_path, target_size=(224, 224))
         im = im.resize((224, 224))
-        # x = image.img_to_array(im)
-        # img_path = get_file(str(time()), origin=img_url)
-        # img = image.load_img(img_path, target_size=(224, 224))
         x = image.img_to_array(im)
-        # x = keras.preprocessing.image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
         x = preprocess_input(x)
         preds = model.predict(x)
