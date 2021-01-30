@@ -221,8 +221,6 @@ async def classify(request):
     if cam_id not in cam_rtsp:
         cam_rtsp[cam_id] = rtsp.Client(play_from)
     img = cam_rtsp[cam_id].read()
-    print('img type is' + str(type(img)))
-    img = Image(img)
 
     # img_path = get_file(str(time()), origin=img_url)
     # img = image.load_img(img_path, target_size=(224, 224))
