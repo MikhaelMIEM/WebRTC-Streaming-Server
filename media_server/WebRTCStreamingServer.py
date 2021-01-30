@@ -220,7 +220,7 @@ async def classify(request):
 
     if cam_id not in cam_rtsp:
         cam_rtsp[cam_id] = rtsp.Client(play_from)
-    img = cam_onvif[cam_id].read()
+    img = cam_rtsp[cam_id].read()
     print('img type is' + type(img))
     img = Image(img)
 
