@@ -221,24 +221,16 @@ async def classify(request):
     if cam_id not in cam_onvif:
         cam_onvif[cam_id] = ONVIFCameraControl((cam_info['ip'], int(cam_info['port'])), 'admin', 'Supervisor')
     img_url = cam_onvif[cam_id].get_snapshot_uri()
-    img_path = '/' + str(time())
-    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    # img_path = '/' + str(time())
+    # ImageFile.LOAD_TRUNCATED_IMAGES = True
 
     session = requests.Session()
     session.auth = ('admin', 'Supervisor')
     auth = session.post(img_url)
-    response = session.get(img_url)
-    im = None
-    with open(img_path, 'wb') as file:
-        file.write(response.content)
-        b = io.BytesIO()
-        file.seek(15, 0)
-
-        b.write(file.read())
-
-        im = Image.open(b)
-        im.load()
-    im = im.resize((224, 224))
+    # response = session.get(img_url)
+    img_path = get_file(str(time()), origin=img_url)
+    img = image.load_img(img_path, target_size=(224, 224))
+    # im = im.resize((224, 224))
     # x = image.img_to_array(im)
     # img_path = get_file(str(time()), origin=img_url)
     # img = image.load_img(img_path, target_size=(224, 224))
