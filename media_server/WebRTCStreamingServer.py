@@ -224,6 +224,7 @@ async def classify(request):
         cam_rtsp[cam_id]['time'] = time()
 
     if (time() - cam_rtsp[cam_id]['time']) > 120:
+        cam_rtsp[cam_id]['client'].close()
         cam_rtsp[cam_id]['client'] = rtsp.Client(play_from)
         cam_rtsp[cam_id]['time'] = time()
 
