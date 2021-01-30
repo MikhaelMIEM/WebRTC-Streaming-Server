@@ -221,19 +221,21 @@ async def classify(request):
     if cam_id not in cam_rtsp:
         cam_rtsp[cam_id] = rtsp.Client(play_from)
     im = cam_rtsp[cam_id].read()
-
-    # img_path = get_file(str(time()), origin=img_url)
-    # img = image.load_img(img_path, target_size=(224, 224))
-    im = im.resize((224, 224))
-    # x = image.img_to_array(im)
-    # img_path = get_file(str(time()), origin=img_url)
-    # img = image.load_img(img_path, target_size=(224, 224))
-    x = image.img_to_array(img)
-    x = keras.preprocessing.image.img_to_array(img)
-    x = np.expand_dims(x, axis=0)
-    x = preprocess_input(x)
-    preds = model.predict(x)
-    text = str([i[1] for i in decode_predictions(preds, top=3)[0]])
+    if im:
+        # img_path = get_file(str(time()), origin=img_url)
+        # img = image.load_img(img_path, target_size=(224, 224))
+        im = im.resize((224, 224))
+        # x = image.img_to_array(im)
+        # img_path = get_file(str(time()), origin=img_url)
+        # img = image.load_img(img_path, target_size=(224, 224))
+        x = image.img_to_array(im)
+        x = keras.preprocessing.image.img_to_array(img)
+        x = np.expand_dims(x, axis=0)
+        x = preprocess_input(x)
+        preds = model.predict(x)
+        text = str([i[1] for i in decode_predictions(preds, top=3)[0]])
+    else:
+        text = ''
     return web.Response(headers=cors_headers, text=text)
 
 
